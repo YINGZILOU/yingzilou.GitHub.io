@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英语口语练习卡片</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  min-height: 100vh;
+  padding: 0 16px 40px;
+}
+.container { max-width: 560px; margin: 0 auto; width: 100%; }
+.topbar { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; padding: 20px 0 16px; }
+.top-title { font-size: 17px; font-weight: 600; color: #1d1d1f; }
+.top-sub { font-size: 12px; color: #6e6e73; margin-top: 2px; }
+.add-btn {
+  display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 5px;
+  font-size: 13px; padding: 7px 13px;
+  border-radius: 10px; border: 1px solid #d1d1d6;
+  background: #fff; color: #1d1d1f; cursor: pointer; white-space: nowrap;
+  -webkit-appearance: none; appearance: none;
+}
+.nav-row { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; margin-bottom: 12px; }
+.nav-btn {
+  display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 4px;
+  font-size: 13px; padding: 7px 14px;
+  border-radius: 10px; border: 1px solid #d1d1d6;
+  background: #fff; color: #1d1d1f; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+}
+.nav-btn:disabled { opacity: 0.3; }
+.dot-row { display: -webkit-flex; display: flex; gap: 6px; -webkit-align-items: center; align-items: center; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #c7c7cc; cursor: pointer; }
+.dot.active { width: 18px; border-radius: 4px; }
+.card { border-radius: 16px; border: 1px solid; overflow: hidden; margin-bottom: 4px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.card-header { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 10px; padding: 16px 16px 12px; }
+.num-circle { width: 32px; height: 32px; border-radius: 50%; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center; font-size: 14px; font-weight: 600; -webkit-flex-shrink: 0; flex-shrink: 0; }
+.title-wrap { -webkit-flex: 1; flex: 1; }
+.main-title { font-size: 15px; font-weight: 600; line-height: 1.3; }
+.sub-title { font-size: 12px; margin-top: 2px; }
+.tmpl-section { padding: 0 16px 12px; border-bottom: 1px solid; }
+.section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; margin-bottom: 6px; opacity: 0.55; text-transform: uppercase; }
+.tmpl-text { font-size: 12px; line-height: 1.7; padding: 8px 10px; border-radius: 8px; border: 1px solid; }
+.phrases-section { padding: 12px 16px 14px; }
+.phrase-row { display: -webkit-flex; display: flex; -webkit-align-items: flex-start; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid; }
+.phrase-row:last-child { border-bottom: none; }
+.phrase-box {
+  width: 22px; height: 22px; border-radius: 5px; border: 1.5px solid;
+  display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;
+  cursor: pointer; -webkit-flex-shrink: 0; flex-shrink: 0; margin-top: 1px;
+}
+.phrase-box-check { font-size: 13px; color: #fff; display: none; }
+.phrase-box.done .phrase-box-check { display: block; }
+.phrase-text {
+  font-size: 16px; line-height: 1.65; -webkit-flex: 1; flex: 1;
+  cursor: pointer; border-radius: 6px; padding: 2px 4px;
+  -webkit-user-select: none; user-select: none;
+}
+.phrase-text.speaking { background: rgba(0,0,0,0.08); }
+.phrase-num { font-weight: 600; font-size: 16px; }
+.phrase-hint { font-size: 10px; color: #aaa; text-align: center; margin-top: 8px; }
+.prog-row { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; gap: 8px; padding: 10px 16px; border-top: 1px solid; }
+.prog-bar { -webkit-flex: 1; flex: 1; height: 5px; border-radius: 5px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 5px; }
+.prog-txt { font-size: 11px; min-width: 40px; text-align: right; }
+.modal-box { display: none; background: #fff; border-radius: 16px; border: 1px solid #d1d1d6; padding: 20px; margin-bottom: 4px; }
+.modal-header { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; margin-bottom: 14px; }
+.modal-title { font-size: 15px; font-weight: 600; color: #1d1d1f; }
+.close-btn { background: none; border: none; cursor: pointer; color: #6e6e73; font-size: 22px; line-height: 1; padding: 0; }
+.field-label { font-size: 12px; color: #6e6e73; margin-bottom: 4px; margin-top: 12px; }
+input[type="text"], textarea {
+  width: 100%; padding: 8px 10px; font-size: 13px;
+  border-radius: 8px; border: 1px solid #d1d1d6;
+  background: #fff; color: #1d1d1f; font-family: inherit;
+  -webkit-appearance: none; appearance: none;
+}
+textarea { resize: none; height: 64px; }
+.pi-row { display: -webkit-flex; display: flex; gap: 6px; -webkit-align-items: center; align-items: center; margin-bottom: 6px; }
+.pi-num { font-size: 12px; color: #6e6e73; min-width: 14px; }
+.modal-actions { display: -webkit-flex; display: flex; gap: 8px; margin-top: 16px; -webkit-justify-content: flex-end; justify-content: flex-end; }
+.modal-actions button { padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #d1d1d6; background: #fff; color: #1d1d1f; font-family: inherit; -webkit-appearance: none; appearance: none; }
+.primary-btn { background: #1d1d1f !important; color: #fff !important; border-color: #1d1d1f !important; }
+.cpick { display: -webkit-flex; display: flex; gap: 8px; margin-top: 6px; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+.cdot { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2.5px solid transparent; }
+.cdot.sel { border-color: #1d1d1f; }
+</style>
+</head>
+<body>
+
+  <!-- Navbar matching yingtian.io -->
+  <nav class="navbar navbar-expand-md navbar-light" style="background:rgba(255,255,255,0.95);border-bottom:1px solid #e8e8e8;position:sticky;top:0;z-index:100;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);">
+    <div style="max-width:560px;margin:0 auto;width:100%;padding:0 16px;display:flex;align-items:center;justify-content:space-between;">
+      <a href="index.html" style="text-decoration:none;">
+        <img src="assets/img/YING TIAN-black.png" alt="Ying Tian" height="24">
+      </a>
+      <a href="ai-tools.html" style="font-size:12px;font-weight:700;letter-spacing:0.1em;color:#888;text-decoration:none;text-transform:uppercase;">← AI Tools</a>
+    </div>
+  </nav>
+
+<div id="ios-tip" style="display:none;background:#fff8e1;border-bottom:1px solid #ffe082;padding:10px 16px;font-size:13px;color:#7a5800;text-align:center;position:fixed;top:0;left:0;right:0;z-index:99;">⚠️ 请点击右上角 <b>Safari 图标</b> 在浏览器中打开，以正常使用所有功能 <button onclick="document.getElementById('ios-tip').style.display='none'" style="margin-left:8px;background:none;border:1px solid #b8860b;border-radius:6px;padding:2px 8px;font-size:12px;cursor:pointer;color:#7a5800;">知道了</button></div>
+<div class="container" id="main-container" style="padding-top:0">
+  <div class="topbar">
+    <div>
+      <div class="top-title">英语口语练习</div>
+      <div class="top-sub" id="global-sub"></div>
+    </div>
+    <button class="add-btn" id="add-btn">+ 添加场景</button>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" id="prev-btn">&lsaquo; 上一个</button>
+    <div class="dot-row" id="dots"></div>
+    <button class="nav-btn" id="next-btn">下一个 &rsaquo;</button>
+  </div>
+  <div id="card-area"></div>
+  <div class="modal-box" id="modal">
+    <div class="modal-header">
+      <span class="modal-title">添加新场景</span>
+      <button class="close-btn" id="close-btn">&times;</button>
+    </div>
+    <div class="field-label">主标题</div>
+    <input type="text" id="f-title" placeholder="例：到达动物园找老师报到">
+    <div class="field-label">副标题（可选）</div>
+    <input type="text" id="f-sub" placeholder="例：领取日程表 · 确认分组">
+    <div class="field-label">模版说明</div>
+    <textarea id="f-tmpl" placeholder="我需要在【场景】说英文，最常遇到的问题是【问题】"></textarea>
+    <div class="field-label">5 个口语例句</div>
+    <div id="phrase-inputs"></div>
+    <div class="field-label">卡片颜色</div>
+    <div class="cpick" id="cpick"></div>
+    <div class="modal-actions">
+      <button id="cancel-btn">取消</button>
+      <button class="primary-btn" id="save-btn">添加场景</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+
+var P = [
+  {bg:"#eef6ff",border:"#a8c8f0",nBg:"#5f8fcc",nTxt:"#fff",mTxt:"#184d8a",sTxt:"#4a7ab5",tBg:"#deeeff",tBd:"#b5d4f4",pBd:"#c5dcf5",bBd:"#5f8fcc",fill:"#5f8fcc",prBg:"#c5dcf5",div:"#d5e8f8"},
+  {bg:"#edfaf4",border:"#88d9b8",nBg:"#2a9e70",nTxt:"#fff",mTxt:"#0a5438",sTxt:"#1e7d55",tBg:"#d5f5e8",tBd:"#a5e0c8",pBd:"#a5e0c8",bBd:"#2a9e70",fill:"#2a9e70",prBg:"#a5e0c8",div:"#c0ead8"},
+  {bg:"#f0ecfe",border:"#b9adee",nBg:"#7d70cc",nTxt:"#fff",mTxt:"#3b2e8a",sTxt:"#6054aa",tBg:"#e5e0ff",tBd:"#cec8f0",pBd:"#cec8f0",bBd:"#7d70cc",fill:"#7d70cc",prBg:"#cec8f0",div:"#d8d2f5"},
+  {bg:"#fff8ec",border:"#f0cc88",nBg:"#d99a30",nTxt:"#fff",mTxt:"#7a4f0a",sTxt:"#a06820",tBg:"#fff0d0",tBd:"#f5d8a0",pBd:"#f5d8a0",bBd:"#d99a30",fill:"#d99a30",prBg:"#f5d8a0",div:"#f5e0b0"},
+  {bg:"#fff0f4",border:"#f0a8c0",nBg:"#c44d76",nTxt:"#fff",mTxt:"#7a1e3e",sTxt:"#a03560",tBg:"#ffe0ea",tBd:"#f5c0d0",pBd:"#f5c0d0",bBd:"#c44d76",fill:"#c44d76",prBg:"#f5c0d0",div:"#f8d0df"},
+  {bg:"#f5f0ff",border:"#c8b8f0",nBg:"#8855cc",nTxt:"#fff",mTxt:"#3d1e80",sTxt:"#6633aa",tBg:"#ede0ff",tBd:"#c8b8f0",pBd:"#c8b8f0",bBd:"#8855cc",fill:"#8855cc",prBg:"#c8b8f0",div:"#d8c8f5"}
+];
+
+var scenes = [
+  {
+    title: "找到 Mrs. Normile 报到",
+    sub: "抵达动物园 · 领日程表 + 午餐袋",
+    tmpl: "我需要在【抵达动物园找老师签到】的时候说英文。我最常遇到的问题是【不知道怎么介绍自己是 Sophie 的妈妈，怎么确认分组和领取物品】。",
+    phrases: [
+      "Hi Mrs. Normile! I am Sophie's mom and I am here to chaperone today!",
+      "Is Sophie in my group for today? I just want to make sure we are together.",
+      "Could I grab a copy of the schedule from you?",
+      "Should I take the lunch bag for our group now, or will we pick it up at lunchtime?",
+      "Thanks so much — I am really excited to be here today!"
+    ],
+    color: 0
+  },
+  {
+    title: "认识负责的学生们",
+    sub: "自我介绍 · 建立信任",
+    tmpl: "我需要在【第一次见到负责的小朋友】的时候说英文。我最常遇到的问题是【怎么用友善轻松的方式自我介绍，让孩子们信任我】。",
+    phrases: [
+      "Hey everyone! I am Sophie's mom and I am your chaperone for today!",
+      "Let's do a quick round of names so I know who's who.",
+      "If you need anything at all, just come find me, okay?",
+      "We are going to stay together as a group — don't wander off!",
+      "We are going to have a great time today — I am excited too!"
+    ],
+    color: 1
+  },
+  {
+    title: "带队在动物园游览",
+    sub: "维持秩序 · 引导方向",
+    tmpl: "我需要在【带着一组孩子在动物园里走动】的时候说英文。我最常遇到的问题是【怎么维持秩序、引导孩子、回应他们的问题】。",
+    phrases: [
+      "Alright guys, let's check the schedule — where are we headed next?",
+      "Okay, let's move! Stay with the group.",
+      "Line up please, and let's walk — no running!",
+      "Which animal are you most excited to see?",
+      "Any questions before we head over? Everyone ready?"
+    ],
+    color: 2
+  },
+  {
+    title: "午餐时间集合分餐",
+    sub: "点名 · 分发午餐袋",
+    tmpl: "我需要在【午餐时间集合分发食物】的时候说英文。我最常遇到的问题是【怎么叫孩子们集中、发午餐、确认没有人走丢】。",
+    phrases: [
+      "Alright everyone, it is lunch time! Come find a spot to sit.",
+      "Let me do a quick headcount before we eat.",
+      "I have got the lunches right here — come grab yours when I call your name.",
+      "Stay seated until everyone is done, okay?",
+      "When you are finished, please throw away your trash — there is a bin right over there."
+    ],
+    color: 3
+  },
+  {
+    title: "返回大巴，结束行程",
+    sub: "清点人数 · 交还给老师",
+    tmpl: "我需要在【带孩子回到大巴车、结束行程】的时候说英文。我最常遇到的问题是【怎么确认所有人都在、顺利交还给老师】。",
+    phrases: [
+      "Okay guys, it is time to head back to the bus!",
+      "Does everyone have their stuff? Nothing left behind?",
+      "Follow me — let's go find Mrs. Normile.",
+      "Did everyone have a good time today?",
+      "Here is my group — everyone is accounted for!"
+    ],
+    color: 4
+  }
+];
+
+var cur = 0;
+var checked = {};
+var selColor = 0;
+var speakingEl = null;
+var currentAudio = null;
+
+function doneCount(si) {
+  var arr = checked[si] || [];
+  var n = 0;
+  for (var i = 0; i < arr.length; i++) { if (arr[i]) n++; }
+  return n;
+}
+function totalDone() {
+  var n = 0;
+  for (var i = 0; i < scenes.length; i++) { n += doneCount(i); }
+  return n;
+}
+function totalPhrases() {
+  var n = 0;
+  for (var i = 0; i < scenes.length; i++) { n += scenes[i].phrases.length; }
+  return n;
+}
+
+function el(id) { return document.getElementById(id); }
+
+function renderDots() {
+  var html = "";
+  for (var i = 0; i < scenes.length; i++) {
+    var active = (i === cur) ? " active" : "";
+    var bg = (i === cur) ? ("background:" + P[scenes[i].color].fill) : "";
+    html += "<div class=\"dot" + active + "\" style=\"" + bg + "\" data-idx=\"" + i + "\"></div>";
+  }
+  el("dots").innerHTML = html;
+  var dots = el("dots").querySelectorAll(".dot");
+  for (var j = 0; j < dots.length; j++) {
+    dots[j].onclick = (function(idx) {
+      return function() { cur = idx; renderCard(); saveState(); };
+    })(j);
+  }
+}
+
+function renderCard() {
+  var s = scenes[cur];
+  var p = P[s.color];
+  var done = doneCount(cur);
+  var total = s.phrases.length;
+  var pct = Math.round(done / total * 100);
+  var html = "";
+
+  html += "<div class=\"card\" style=\"background:" + p.bg + ";border-color:" + p.border + "\">";
+
+  // header
+  html += "<div class=\"card-header\">";
+  html += "<div class=\"num-circle\" style=\"background:" + p.nBg + ";color:" + p.nTxt + "\">" + (cur + 1) + "</div>";
+  html += "<div class=\"title-wrap\">";
+  html += "<div class=\"main-title\" style=\"color:" + p.mTxt + "\">" + s.title + "</div>";
+  if (s.sub) {
+    html += "<div class=\"sub-title\" style=\"color:" + p.sTxt + "\">" + s.sub + "</div>";
+  }
+  html += "</div></div>";
+
+  // template
+  html += "<div class=\"tmpl-section\" style=\"border-color:" + p.div + "\">";
+  html += "<div class=\"section-label\" style=\"color:" + p.sTxt + "\">模版填写</div>";
+  html += "<div class=\"tmpl-text\" style=\"background:" + p.tBg + ";border-color:" + p.tBd + ";color:" + p.mTxt + "\">" + s.tmpl + "</div>";
+  html += "</div>";
+
+  // phrases
+  html += "<div class=\"phrases-section\">";
+  html += "<div class=\"section-label\" style=\"color:" + p.sTxt + "\">口语例句</div>";
+  for (var pi = 0; pi < s.phrases.length; pi++) {
+    var ph = s.phrases[pi];
+    var d = (checked[cur] && checked[cur][pi]) ? true : false;
+    var boxBg = d ? ("background:" + p.fill + ";border-color:" + p.fill) : ("border-color:" + p.bBd);
+    var txtDecor = d ? "text-decoration:line-through;opacity:0.6;" : "";
+    html += "<div class=\"phrase-row\" style=\"border-color:" + p.pBd + "\">";
+    html += "<div class=\"phrase-box" + (d ? " done" : "") + "\" style=\"" + boxBg + "\" data-pi=\"" + pi + "\">";
+    html += "<span class=\"phrase-box-check\">&#10003;</span>";
+    html += "</div>";
+    html += "<div class=\"phrase-text\" style=\"color:" + (d ? p.sTxt : p.mTxt) + ";" + txtDecor + "\" data-pi=\"" + pi + "\">";
+    html += "<span class=\"phrase-num\" style=\"color:" + p.nBg + "\">" + (pi + 1) + ".</span> " + ph;
+    html += "</div>";
+    html += "</div>";
+  }
+  html += "<div class=\"phrase-hint\">&#128483; 点击句子朗读（美式英语）</div>";
+  html += "</div>";
+
+  // progress
+  html += "<div class=\"prog-row\" style=\"border-color:" + p.div + "\">";
+  html += "<div class=\"prog-bar\" style=\"background:" + p.prBg + "\">";
+  html += "<div class=\"prog-fill\" style=\"width:" + pct + "%;background:" + p.fill + "\"></div>";
+  html += "</div>";
+  html += "<div class=\"prog-txt\" style=\"color:" + p.sTxt + "\">" + done + "/" + total + " 已练习</div>";
+  html += "</div></div>";
+
+  el("card-area").innerHTML = html;
+  el("global-sub").textContent = scenes.length + " 个场景 · 共 " + totalPhrases() + " 句 · " + totalDone() + " 句已练习";
+  el("prev-btn").disabled = (cur === 0);
+  el("next-btn").disabled = (cur === scenes.length - 1);
+  renderDots();
+
+  // bind clicks via event delegation on card-area
+  var cardArea = el("card-area");
+  cardArea.onclick = function(e) {
+    var target = e.target;
+    // walk up to find phrase-box or phrase-text
+    while (target && target !== cardArea) {
+      if (target.className && target.className.indexOf("phrase-text") >= 0 && target.getAttribute("data-pi") !== null) {
+        speakByIndex(parseInt(target.getAttribute("data-pi"), 10));
+        return;
+      }
+      if (target.className && target.className.indexOf("phrase-box") >= 0 && target.getAttribute("data-pi") !== null) {
+        toggleCheck(parseInt(target.getAttribute("data-pi"), 10));
+        return;
+      }
+      target = target.parentNode;
+    }
+  };
+}
+
+function toggleCheck(pi) {
+  if (!checked[cur]) checked[cur] = [];
+  checked[cur][pi] = !checked[cur][pi];
+  renderCard();
+  saveState();
+}
+
+function speakByIndex(pi) {
+  var text = scenes[cur].phrases[pi];
+  if (!text) return;
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (speakingEl) { speakingEl.className = speakingEl.className.replace(" speaking", ""); speakingEl = null; }
+
+  var el2 = document.querySelector(".phrase-text[data-pi=\"" + pi + "\"]");
+  if (el2) { el2.className += " speaking"; speakingEl = el2; }
+
+  var clearState = function() {
+    if (speakingEl) { speakingEl.className = speakingEl.className.replace(" speaking", ""); speakingEl = null; }
+    currentAudio = null;
+  };
+
+  var encoded = encodeURIComponent(text);
+  var url = "https://translate.google.com/translate_tts?ie=UTF-8&tl=en-US&client=tw-ob&q=" + encoded;
+  var audio = new Audio(url);
+  audio.onended = clearState;
+  audio.onerror = function() {
+    clearState();
+    if (!window.speechSynthesis) return;
+    if (el2) { el2.className += " speaking"; speakingEl = el2; }
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "en-US";
+    utter.rate = 0.88;
+    var voices = window.speechSynthesis.getVoices();
+    var pick = null;
+    for (var i = 0; i < voices.length; i++) {
+      if (voices[i].lang === "en-US") { pick = voices[i]; break; }
+    }
+    if (pick) utter.voice = pick;
+    utter.onend = clearState;
+    utter.onerror = clearState;
+    window.speechSynthesis.speak(utter);
+  };
+  currentAudio = audio;
+  var playPromise = audio.play();
+  if (playPromise && playPromise.catch) {
+    playPromise.catch(function() { audio.onerror(); });
+  }
+}
+
+// nav buttons
+el("prev-btn").onclick = function() { if (cur > 0) { cur--; renderCard(); saveState(); } };
+el("next-btn").onclick = function() { if (cur < scenes.length - 1) { cur++; renderCard(); saveState(); } };
+
+// modal
+el("add-btn").onclick = function() { openModal(); };
+el("close-btn").onclick = function() { closeModal(); };
+el("cancel-btn").onclick = function() { closeModal(); };
+el("save-btn").onclick = function() { addCard(); };
+
+function openModal() {
+  selColor = scenes.length % P.length;
+  var piHtml = "";
+  for (var i = 1; i <= 5; i++) {
+    piHtml += "<div class=\"pi-row\"><span class=\"pi-num\">" + i + "</span><input type=\"text\" id=\"p" + i + "\" placeholder=\"第 " + i + " 句英文口语例句\"></div>";
+  }
+  el("phrase-inputs").innerHTML = piHtml;
+  var cpHtml = "";
+  for (var j = 0; j < P.length; j++) {
+    cpHtml += "<div class=\"cdot" + (j === selColor ? " sel" : "") + "\" style=\"background:" + P[j].fill + "\" data-ci=\"" + j + "\"></div>";
+  }
+  el("cpick").innerHTML = cpHtml;
+  var dots = el("cpick").querySelectorAll(".cdot");
+  for (var k = 0; k < dots.length; k++) {
+    dots[k].onclick = (function(idx) {
+      return function() { pickColor(idx); };
+    })(k);
+  }
+  el("f-title").value = "";
+  el("f-sub").value = "";
+  el("f-tmpl").value = "";
+  el("card-area").style.display = "none";
+  el("modal").style.display = "block";
+}
+
+function pickColor(i) {
+  selColor = i;
+  var dots = el("cpick").querySelectorAll(".cdot");
+  for (var j = 0; j < dots.length; j++) {
+    dots[j].className = dots[j].className.replace(" sel", "");
+    if (j === i) dots[j].className += " sel";
+  }
+}
+
+function closeModal() {
+  el("modal").style.display = "none";
+  el("card-area").style.display = "block";
+}
+
+function addCard() {
+  var title = el("f-title").value.trim();
+  if (!title) { alert("请填写主标题"); return; }
+  var sub = el("f-sub").value.trim();
+  var tmpl = el("f-tmpl").value.trim() || "（待填写模版说明）";
+  var phrases = [];
+  for (var i = 1; i <= 5; i++) {
+    var inp = el("p" + i);
+    if (inp && inp.value.trim()) phrases.push(inp.value.trim());
+  }
+  if (!phrases.length) phrases.push("（待填写例句）");
+  scenes.push({ title: title, sub: sub, tmpl: tmpl, phrases: phrases, color: selColor });
+  cur = scenes.length - 1;
+  closeModal();
+  renderCard();
+  saveState();
+}
+
+
+// ── localStorage 持久化 ──
+var STORAGE_KEY = "english_practice_data";
+
+function saveState() {
+  try {
+    var data = {
+      scenes: scenes,
+      checked: checked,
+      cur: cur,
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    var data = JSON.parse(raw);
+    if (data.scenes && data.scenes.length > 0) {
+      scenes = data.scenes;
+    }
+    if (data.checked) {
+      checked = data.checked;
+    }
+    if (typeof data.cur === "number" && data.cur < scenes.length) {
+      cur = data.cur;
+    }
+    return true;
+  } catch(e) { return false; }
+}
+
+loadState();
+renderCard();
+
+// Show tip on iPhone
+if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+  var tip = document.getElementById("ios-tip");
+  if (tip) {
+    tip.style.display = "block";
+    document.getElementById("main-container").style.paddingTop = "52px";
+  }
+}
+
+})();
+</script>
+</body>
+</html>

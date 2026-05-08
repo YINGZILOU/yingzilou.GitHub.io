@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta property="og:title" content="AI Tools — Ying Tian">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <title>AI Tools — Ying Tian</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    /* ── page-specific styles only ── */
+    .ai-hero {
+      padding: 72px 0 48px;
+      border-bottom: 1px solid #e8e8e8;
+      margin-bottom: 56px;
+    }
+    .ai-hero .tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 16px;
+    }
+    .ai-hero h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+    }
+    .ai-hero p {
+      font-size: 16px;
+      color: #666;
+      max-width: 480px;
+      line-height: 1.7;
+    }
+
+    .tools-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bbb;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e8e8e8;
+      margin-bottom: 32px;
+    }
+
+    .tool-card {
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 28px;
+      background: #fff;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .tool-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+      transform: translateY(-2px);
+    }
+    .tool-card.dimmed {
+      opacity: 0.5;
+    }
+    .tool-card.dimmed:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .tool-thumb {
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+    }
+
+    .tool-body {
+      padding: 22px 24px 26px;
+    }
+    .tool-status {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .status-live { background: #e8f5ee; color: #1a6e3c; }
+    .status-wip  { background: #f5f0e8; color: #7a5500; }
+
+    .tool-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    .tool-subtitle {
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+    .tool-desc {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+    .tool-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .tool-tag {
+      font-size: 11px;
+      color: #888;
+      background: #f4f4f4;
+      border-radius: 6px;
+      padding: 3px 9px;
+    }
+    .btn-tool {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      padding: 9px 20px;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      transition: background 0.15s;
+    }
+    .btn-tool:hover { background: #333; color: #fff; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar (exact same structure as your site) ── -->
+  <nav class="navbar navbar-expand-md navbar-light sticky-top" style="background:rgba(255,255,255,0.95);border-bottom:1px solid #eee;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img src="assets/img/YING TIAN-black.png" alt="Ying Tian" height="28">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">HOME</a></li>
+          <li class="nav-item"><a class="nav-link" href="Work.html">WORK</a></li>
+          <li class="nav-item"><a class="nav-link active" href="ai-tools.html">AI TOOLS</a></li>
+          <li class="nav-item"><a class="nav-link" href="About.html">ABOUT</a></li>
+          <li class="nav-item"><a class="nav-link" href="https://drive.google.com/file/d/1mia9jmnG8wyZJ3LuaZ6iDZIM5zSX8jFb/view?usp=sharing" target="_blank">RESUME</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <div class="container">
+    <div class="ai-hero">
+      <div class="tag">AI Tools</div>
+      <h1>Tiny tools,<br>real use.</h1>
+      <p>Small apps built with AI assistance, each solving a specific personal need. Practical, iterative, and always a work in progress.</p>
+    </div>
+
+    <!-- ── Section label ── -->
+    <div class="tools-section-label">Live &nbsp;·&nbsp; 1 tool</div>
+
+    <!-- ── Cards grid ── -->
+    <div class="row">
+
+      <!-- Card 1: English Practice -->
+      <div class="col-md-6">
+        <div class="tool-card">
+          <div class="tool-thumb" style="background:linear-gradient(135deg,#eef6ff,#dce8ff);">
+            🗣️
+          </div>
+          <div class="tool-body">
+            <span class="tool-status status-live">Live</span>
+            <div class="tool-title">英语口语练习</div>
+            <div class="tool-subtitle">English Speaking Practice</div>
+            <div class="tool-desc">
+              Scene-based oral English practice cards. Each card covers a real-life situation with 5 natural phrases, tap-to-listen (US English), and progress tracking — all saved locally.
+            </div>
+            <div class="tool-tags">
+              <span class="tool-tag">Language Learning</span>
+              <span class="tool-tag">TTS</span>
+              <span class="tool-tag">LocalStorage</span>
+            </div>
+            <a class="btn-tool" href="english_practice_cards.html">Open Tool →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Coming soon -->
+      <div class="col-md-6">
+        <div class="tool-card dimmed">
+          <div class="tool-thumb" style="background:linear-gradient(135deg,#f0ecfe,#e8e0ff);">
+            ✦
+          </div>
+          <div class="tool-body">
+            <span class="tool-status status-wip">Coming Soon</span>
+            <div class="tool-title">Next Tool</div>
+            <div class="tool-subtitle">In Progress</div>
+            <div class="tool-desc">Something useful is being built here.</div>
+            <div class="tool-tags">
+              <span class="tool-tag">Stay tuned</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Coming soon -->
+      <div class="col-md-6">
+        <div class="tool-card dimmed">
+          <div class="tool-thumb" style="background:linear-gradient(135deg,#edfaf4,#d5f5e8);">
+            ✦
+          </div>
+          <div class="tool-body">
+            <span class="tool-status status-wip">Coming Soon</span>
+            <div class="tool-title">Next Tool</div>
+            <div class="tool-subtitle">In Progress</div>
+            <div class="tool-desc">Something useful is being built here.</div>
+            <div class="tool-tags">
+              <span class="tool-tag">Stay tuned</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /row -->
+  </div><!-- /container -->
+
+  <!-- ── Footer (same as your site) ── -->
+  <footer class="text-center py-5 mt-4" style="border-top:1px solid #eee;">
+    <img src="assets/img/YING TIAN-black.png" alt="Ying Tian" height="24" class="mb-3 d-block mx-auto">
+    <a href="mailto:yingtian.ux@gmail.com" class="mx-2" style="color:#666;font-size:13px;">yingtian.ux@gmail.com</a>
+    <a href="https://www.linkedin.com/in/yingtian2025/" target="_blank" class="mx-2" style="color:#666;font-size:13px;">LinkedIn</a>
+    <p class="mt-3 mb-0" style="font-size:12px;color:#bbb;">© 2026 Ying Tian. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
