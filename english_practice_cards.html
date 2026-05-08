@@ -345,46 +345,60 @@ function toggleCheck(pi) {
   saveState();
 }
 
+// 按优先级选最自然的英语声音
+function pickBestVoice(voices) {
+  var tests = [
+    function(v) { return v.lang === "en-US" && (/premium|enhanced/i.test(v.name)); },
+    function(v) { return v.lang === "en-US" && (/samantha/i.test(v.name)); },
+    function(v) { return v.lang === "en-US" && (/ava|allison|victoria|karen|nicky/i.test(v.name)); },
+    function(v) { return v.lang === "en-US" && (/zira|mark/i.test(v.name)); },
+    function(v) { return v.lang === "en-US"; },
+    function(v) { return v.lang === "en-AU" || v.lang === "en-GB"; },
+    function(v) { return v.lang.indexOf("en") === 0; }
+  ];
+  for (var t = 0; t < tests.length; t++) {
+    for (var j = 0; j < voices.length; j++) {
+      if (tests[t](voices[j])) return voices[j];
+    }
+  }
+  return null;
+}
+
+function doSpeak(text, el2) {
+  window.speechSynthesis.cancel();
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "en-US";
+  utter.rate = 0.88;
+  utter.pitch = 1.0;
+  var pick = pickBestVoice(window.speechSynthesis.getVoices());
+  if (pick) utter.voice = pick;
+  var clearState = function() {
+    if (speakingEl) { speakingEl.className = speakingEl.className.replace(" speaking", ""); speakingEl = null; }
+  };
+  utter.onend = clearState;
+  utter.onerror = clearState;
+  window.speechSynthesis.speak(utter);
+}
+
 function speakByIndex(pi) {
+  if (!window.speechSynthesis) return;
   var text = scenes[cur].phrases[pi];
   if (!text) return;
-  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-  if (speakingEl) { speakingEl.className = speakingEl.className.replace(" speaking", ""); speakingEl = null; }
 
+  window.speechSynthesis.cancel();
+  if (speakingEl) { speakingEl.className = speakingEl.className.replace(" speaking", ""); speakingEl = null; }
   var el2 = document.querySelector(".phrase-text[data-pi=\"" + pi + "\"]");
   if (el2) { el2.className += " speaking"; speakingEl = el2; }
 
-  var clearState = function() {
-    if (speakingEl) { speakingEl.className = speakingEl.className.replace(" speaking", ""); speakingEl = null; }
-    currentAudio = null;
-  };
-
-  var encoded = encodeURIComponent(text);
-  var url = "https://translate.google.com/translate_tts?ie=UTF-8&tl=en-US&client=tw-ob&q=" + encoded;
-  var audio = new Audio(url);
-  audio.onended = clearState;
-  audio.onerror = function() {
-    clearState();
-    if (!window.speechSynthesis) return;
-    if (el2) { el2.className += " speaking"; speakingEl = el2; }
-    var utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "en-US";
-    utter.rate = 0.88;
-    var voices = window.speechSynthesis.getVoices();
-    var pick = null;
-    for (var i = 0; i < voices.length; i++) {
-      if (voices[i].lang === "en-US") { pick = voices[i]; break; }
-    }
-    if (pick) utter.voice = pick;
-    utter.onend = clearState;
-    utter.onerror = clearState;
-    window.speechSynthesis.speak(utter);
-  };
-  currentAudio = audio;
-  var playPromise = audio.play();
-  if (playPromise && playPromise.catch) {
-    playPromise.catch(function() { audio.onerror(); });
+  var voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    doSpeak(text, el2);
+  } else {
+    // 声音列表异步加载，等加载完再播
+    window.speechSynthesis.onvoiceschanged = function() {
+      window.speechSynthesis.onvoiceschanged = null;
+      doSpeak(text, el2);
+    };
   }
 }
 
