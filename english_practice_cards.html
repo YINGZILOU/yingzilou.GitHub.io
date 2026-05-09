@@ -124,26 +124,45 @@ textarea { resize: none; height: 64px; }
     <button class="nav-btn" id="next-btn">下一个 &rsaquo;</button>
   </div>
   <div id="card-area"></div>
-  <div class="modal-box" id="modal">
-    <div class="modal-header">
-      <span class="modal-title">添加新场景</span>
-      <button class="close-btn" id="close-btn">&times;</button>
-    </div>
-    <div class="field-label">主标题</div>
-    <input type="text" id="f-title" placeholder="例：到达动物园找老师报到">
-    <div class="field-label">副标题（可选）</div>
-    <input type="text" id="f-sub" placeholder="例：领取日程表 · 确认分组">
-    <div class="field-label">模版说明</div>
-    <textarea id="f-tmpl" placeholder="我需要在【场景】说英文，最常遇到的问题是【问题】"></textarea>
-    <div class="field-label">5 个口语例句</div>
-    <div id="phrase-inputs"></div>
-    <!-- color picker removed -->
-    <div class="modal-actions">
-      <button id="cancel-btn">取消</button>
-      <button class="primary-btn" id="save-btn">添加场景</button>
+  <div class="modal-wrap" id="modal-wrap" style="display:none">
+    <div class="modal-box" style="border-radius:16px;border:1px solid #e8ddd2;background:#fffcf8;padding:20px;margin-bottom:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:15px;font-weight:600;color:#3d2c1e">添加新场景</span>
+        <button id="close-btn" style="background:none;border:none;cursor:pointer;color:#a89080;font-size:22px;line-height:1;padding:0">&times;</button>
+      </div>
+      <p style="font-size:12px;color:#a89080;margin-bottom:16px;line-height:1.5">描述你的场景，AI 会帮你生成自然的口语例句。</p>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:12px;font-weight:600;color:#7a6155;margin-bottom:5px;display:block" for="f-scene">这个场景是什么？</label>
+        <input type="text" id="f-scene" placeholder="例：在超市找不到商品，向店员求助"
+          style="width:100%;padding:9px 11px;font-size:14px;border-radius:8px;border:1px solid #e8ddd2;background:#f7f0e8;color:#3d2c1e;font-family:inherit;-webkit-appearance:none;appearance:none">
+        <div style="font-size:11px;color:#a89080;margin-top:4px">用一句话描述你需要开口说英文的情境</div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:12px;font-weight:600;color:#7a6155;margin-bottom:5px;display:block" for="f-worry">你最担心说不好哪里？<span style="font-weight:400;color:#a89080">（可选）</span></label>
+        <textarea id="f-worry" placeholder="例：不知道怎么礼貌地打断正在忙的店员"
+          style="width:100%;padding:9px 11px;font-size:14px;border-radius:8px;border:1px solid #e8ddd2;background:#f7f0e8;color:#3d2c1e;font-family:inherit;-webkit-appearance:none;appearance:none;resize:none;height:64px"></textarea>
+      </div>
+
+      <button id="ai-btn"
+        style="width:100%;padding:10px;border-radius:8px;border:1px solid #8b5e3c;background:#f5ebe1;color:#8b5e3c;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">
+        ✦ AI 生成例句
+      </button>
+      <div id="status-msg" style="font-size:11px;text-align:center;padding:6px 0;color:#a89080;min-height:22px"></div>
+
+      <hr style="border:none;border-top:1px solid #e8ddd2;margin:16px 0">
+      <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#a89080;margin-bottom:10px">
+        口语例句 <span style="font-weight:400;font-size:10px;color:#c4b0a0">— 可直接编辑</span>
+      </div>
+      <div id="phrase-inputs"></div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end">
+        <button id="cancel-btn" style="padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #e8ddd2;background:transparent;color:#7a6155;font-family:inherit">取消</button>
+        <button id="save-btn" style="padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #8b5e3c;background:#8b5e3c;color:#fff;font-family:inherit">保存场景</button>
+      </div>
     </div>
   </div>
-</div>
 
 <script>
 (function() {
@@ -429,57 +448,92 @@ el("next-btn").onclick = function() { if (cur < scenes.length - 1) { cur++; rend
 el("add-btn").onclick = function() { openModal(); };
 el("close-btn").onclick = function() { closeModal(); };
 el("cancel-btn").onclick = function() { closeModal(); };
-el("save-btn").onclick = function() { addCard(); };
 
-function openModal() {
-  selColor = scenes.length % P.length;
-  var piHtml = "";
+var generatedSub = "";
+
+function initPhraseInputs() {
+  var h = "";
   for (var i = 1; i <= 5; i++) {
-    piHtml += "<div class=\"pi-row\"><span class=\"pi-num\">" + i + "</span><input type=\"text\" id=\"p" + i + "\" placeholder=\"第 " + i + " 句英文口语例句\"></div>";
+    h += "<div style=\"display:flex;gap:8px;align-items:center;margin-bottom:8px\">";
+    h += "<span style=\"font-size:12px;color:#a89080;min-width:16px;text-align:center;flex-shrink:0\">" + i + "</span>";
+    h += "<input id=\"pe" + i + "\" type=\"text\" placeholder=\"第 " + i + " 句口语例句\"";
+    h += " style=\"flex:1;padding:8px 10px;font-size:13px;border-radius:8px;border:1px solid #e8ddd2;background:#f7f0e8;color:#3d2c1e;font-family:inherit;-webkit-appearance:none\">";
+    h += "</div>";
   }
-  el("phrase-inputs").innerHTML = piHtml;
-  var cpHtml = "";
-  for (var j = 0; j < P.length; j++) {
-    cpHtml += "<div class=\"cdot" + (j === selColor ? " sel" : "") + "\" style=\"background:" + P[j].fill + "\" data-ci=\"" + j + "\"></div>";
-  }
-  el("cpick").innerHTML = cpHtml;
-  var dots = el("cpick").querySelectorAll(".cdot");
-  for (var k = 0; k < dots.length; k++) {
-    dots[k].onclick = (function(idx) {
-      return function() { pickColor(idx); };
-    })(k);
-  }
-  el("f-title").value = "";
-  el("f-sub").value = "";
-  el("f-tmpl").value = "";
-  el("card-area").style.display = "none";
-  el("modal").style.display = "block";
+  el("phrase-inputs").innerHTML = h;
 }
 
-// pickColor removed
+function setStatus(msg, cls) {
+  var s = el("status-msg");
+  s.textContent = msg;
+  s.style.color = (cls === "err") ? "#b94040" : (cls === "ok") ? "#5a7a3a" : "#a89080";
+}
+
+function openModal() {
+  generatedSub = "";
+  el("f-scene").value = "";
+  el("f-worry").value = "";
+  setStatus("");
+  el("ai-btn").disabled = false;
+  el("save-btn").disabled = false;
+  el("ai-btn").textContent = "✦ AI 生成例句";
+  initPhraseInputs();
+  el("card-area").style.display = "none";
+  el("modal-wrap").style.display = "block";
+}
 
 function closeModal() {
-  el("modal").style.display = "none";
+  el("modal-wrap").style.display = "none";
   el("card-area").style.display = "block";
 }
 
-function addCard() {
-  var title = el("f-title").value.trim();
-  if (!title) { alert("请填写主标题"); return; }
-  var sub = el("f-sub").value.trim();
-  var tmpl = el("f-tmpl").value.trim() || "（待填写模版说明）";
+el("ai-btn").onclick = function() {
+  var scene = el("f-scene").value.trim();
+  if (!scene) { setStatus("请先填写场景描述", "err"); el("f-scene").focus(); return; }
+  var worry = el("f-worry").value.trim();
+  el("ai-btn").disabled = true;
+  el("save-btn").disabled = true;
+  el("ai-btn").textContent = "生成中，请稍候…";
+  setStatus("AI 正在理解你的场景…");
+  var prompt = "你是英语口语教练，帮助英语不流利的成年人在真实场景中开口说话。\n\n场景：" + scene + (worry ? "\n最担心：" + worry : "") + "\n\n请生成5句自然、地道的英语口语例句（难度适中，口语风格，覆盖该场景不同时刻），以及一个简短的中文副标题（格式如\"超市 · 向店员求助\"，10字以内）。\n\n只返回JSON，不要其他文字：\n{\"sub\":\"副标题\",\"phrases\":[\"句1\",\"句2\",\"句3\",\"句4\",\"句5\"]}";
+
+  // 请把下面的 URL 替换成你的 Cloudflare Worker 地址
+  var WORKER_URL = "https://anthropic-proxy.tytian.workers.dev";
+
+  fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt: prompt })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (!d.text) throw new Error("无响应");
+    var parsed = JSON.parse(d.text.replace(/```json|```/g, "").trim());
+    if (!parsed.phrases || parsed.phrases.length < 5) throw new Error("格式错误");
+    generatedSub = parsed.sub || "";
+    for (var j = 0; j < 5; j++) { var inp = el("pe" + (j + 1)); if (inp) inp.value = parsed.phrases[j] || ""; }
+    setStatus("✓ 已生成 5 句例句，可直接修改后保存", "ok");
+    el("ai-btn").disabled = false; el("save-btn").disabled = false;
+    el("ai-btn").textContent = "✦ 重新生成";
+  })
+  .catch(function() {
+    setStatus("生成失败，请手动填写例句", "err");
+    el("ai-btn").disabled = false; el("save-btn").disabled = false;
+    el("ai-btn").textContent = "✦ AI 生成例句";
+  });
+};
+
+el("save-btn").onclick = function() {
+  var scene = el("f-scene").value.trim();
+  if (!scene) { setStatus("请填写场景名称", "err"); return; }
   var phrases = [];
-  for (var i = 1; i <= 5; i++) {
-    var inp = el("p" + i);
-    if (inp && inp.value.trim()) phrases.push(inp.value.trim());
-  }
-  if (!phrases.length) phrases.push("（待填写例句）");
-  scenes.push({ title: title, sub: sub, tmpl: tmpl, phrases: phrases, color: selColor });
+  for (var i = 1; i <= 5; i++) { var v = el("pe" + i); if (v && v.value.trim()) phrases.push(v.value.trim()); }
+  if (!phrases.length) { setStatus("请至少填写一句例句", "err"); return; }
+  var worry = el("f-worry").value.trim();
+  scenes.push({ title: scene, sub: generatedSub, tmpl: worry ? "最担心：" + worry : "", phrases: phrases });
   cur = scenes.length - 1;
-  closeModal();
-  renderCard();
-  saveState();
-}
+  closeModal(); renderCard(); saveState();
+};
 
 
 // ── localStorage 持久化 ──
